@@ -7,7 +7,7 @@ function Button({ children, active, primary, onClick }) {
 			onClick={onClick}
 			className={cx('text-gray-500 text-lg p-[18px]', {
 				'text-blue-400': active,
-				'text-white': !active && primary,
+				'text-white': primary,
 				'w-14 h-14 bg-blue-400 rounded-full flex justify-center items-center':
 					primary,
 			})}

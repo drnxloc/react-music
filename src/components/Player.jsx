@@ -54,11 +54,15 @@ function Player() {
 			<PlayList>
 				<Song
 					active
-					name="abc"
+					name="Đám cưới nha!"
 					singer="Hồng Thanh"
 					image="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_webp/cover/e/e/1/c/ee1c0fbea45998492524c8f3b5992ab4.jpg"
 				></Song>
-				<Song></Song>
+				<Song
+					name="Đám cưới nha 2!"
+					singer="Hồng Thanh"
+					image="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_webp/cover/e/e/1/c/ee1c0fbea45998492524c8f3b5992ab4.jpg"
+				></Song>
 				<Song></Song>
 			</PlayList>
 		</div>
@@ -67,22 +71,32 @@ function Player() {
 
 function Controls() {
 	const [playing, setPlaying] = useState(false)
+	const [redo, setRedo] = useState(false)
+	const [random, setRandom] = useState(false)
+
+	function backward() {}
+
+	function forward() {}
 
 	return (
 		<div className="flex items-center justify-center space-around pt-[18px] pb-2">
-			<Button active>
+			<Button active={redo} onClick={() => setRedo(!redo)}>
 				<FaRedo />
 			</Button>
-			<Button>
+			<Button onClick={backward}>
 				<FaStepBackward />
 			</Button>
-			<Button primary onClick={() => setPlaying(!playing)}>
+			<Button
+				primary
+				active={playing}
+				onClick={() => setPlaying(!playing)}
+			>
 				{(playing && <FaPause />) || <FaPlay />}
 			</Button>
-			<Button>
+			<Button onClick={forward}>
 				<FaStepForward />
 			</Button>
-			<Button>
+			<Button active={random} onClick={() => setRandom(!random)}>
 				<FaRandom />
 			</Button>
 		</div>

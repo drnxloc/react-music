@@ -8,7 +8,7 @@ function Song({ name, singer, image, active }) {
 			className={cx(
 				'flex item-center mb-3 bg-white py-2 px-4 rounded shadow-sm',
 				{
-					'bg-blue-400': active,
+					'bg-blue-500 text-white': active,
 				}
 			)}
 		>
@@ -20,7 +20,11 @@ function Song({ name, singer, image, active }) {
 				<h3 className="text-lg">{name}</h3>
 				<p className="text-xs">{singer}</p>
 			</div>
-			<div className="py-4 px-2 font-medium text-blue-400">
+			<div
+				className={cx('py-4 px-2 font-medium text-blue-400', {
+					'text-white': active,
+				})}
+			>
 				<FaEllipsisH />
 			</div>
 		</div>
