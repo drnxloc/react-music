@@ -4,19 +4,26 @@ import {
 	FaRedo,
 	FaStepBackward,
 	FaPlay,
+	FaPause,
 	FaStepForward,
 	FaRandom,
 } from 'react-icons/fa'
+import PlayList from './PlayList'
+import Song from './Song'
 
 function Player() {
 	const [progress, setProgress] = useState(0)
+	const [name, setName] = useState('Đám cưới nha!')
+
 	return (
 		<div className="relative max-w-[480px] mx-auto">
 			{/* Dashboard */}
-			<div className="pt-4 px-4 pb-[14px] bg-white fixed top-0 w-full max-w-[480px] border-b border-b-gray-300">
-				<header>
-					<h4>Now playing:</h4>
-					<h2>String 57th & 9th</h2>
+			<div className="mt-4 pt-4 px-4 pb-[14px] bg-white fixed top-0 w-full max-w-[480px] border-b border-b-gray-300">
+				<header className="text-center mb-3">
+					<h4 className="text-sm text-blue-600 font-bold">
+						Now playing:
+					</h4>
+					<h2 className="text-xl">{name}</h2>
 				</header>
 				{/* CD */}
 				<div className="flex m-auto w-52">
@@ -40,22 +47,37 @@ function Player() {
 					min="0"
 					max="100"
 				/>
+
+				<audio id="audio" src=""></audio>
 			</div>
+
+			<PlayList>
+				<Song
+					active
+					name="abc"
+					singer="Hồng Thanh"
+					image="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_webp/cover/e/e/1/c/ee1c0fbea45998492524c8f3b5992ab4.jpg"
+				></Song>
+				<Song></Song>
+				<Song></Song>
+			</PlayList>
 		</div>
 	)
 }
 
 function Controls() {
+	const [playing, setPlaying] = useState(false)
+
 	return (
 		<div className="flex items-center justify-center space-around pt-[18px] pb-2">
-			<Button>
+			<Button active>
 				<FaRedo />
 			</Button>
 			<Button>
 				<FaStepBackward />
 			</Button>
-			<Button>
-				<FaPlay />
+			<Button primary onClick={() => setPlaying(!playing)}>
+				{(playing && <FaPause />) || <FaPlay />}
 			</Button>
 			<Button>
 				<FaStepForward />
