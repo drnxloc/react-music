@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Button from './Button'
 import {
 	FaRedo,
@@ -10,10 +10,16 @@ import {
 } from 'react-icons/fa'
 import PlayList from './PlayList'
 import Song from './Song'
+import songs from '~/data/songs'
 
 function Player() {
 	const [progress, setProgress] = useState(0)
 	const [name, setName] = useState('Đám cưới nha!')
+	const [singer, setSinger] = useState('Nguyễn Thị Thùy Linh')
+	const [image, setImage] = useState()
+	const [musics, setMusics] = useState()
+	const audioRef = useRef()
+	console.log(songs)
 
 	return (
 		<div className="relative max-w-[480px] mx-auto">
@@ -28,12 +34,10 @@ function Player() {
 				{/* CD */}
 				<div className="flex m-auto w-52">
 					{/* CD Thumb */}
-					<div className="w-full pt-[100%] rounded-full m-auto bg-cover bg-slate-500"></div>
-					<img
-						src="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_webp/cover/e/e/1/c/ee1c0fbea45998492524c8f3b5992ab4.jpg"
-						alt=""
-						className="rounded-full"
-					/>
+					<div
+						className="w-full pt-[100%] rounded-full m-auto bg-cover bg-slate-500"
+						style={{ backgroundImage: `url(${image})` }}
+					></div>
 				</div>
 
 				<Controls></Controls>
@@ -48,22 +52,20 @@ function Player() {
 					max="100"
 				/>
 
-				<audio id="audio" src=""></audio>
+				<audio ref={audioRef} src=""></audio>
 			</div>
 
 			<PlayList>
-				<Song
-					active
-					name="Đám cưới nha!"
-					singer="Hồng Thanh"
-					image="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_webp/cover/e/e/1/c/ee1c0fbea45998492524c8f3b5992ab4.jpg"
-				></Song>
-				<Song
-					name="Đám cưới nha 2!"
-					singer="Hồng Thanh"
-					image="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_webp/cover/e/e/1/c/ee1c0fbea45998492524c8f3b5992ab4.jpg"
-				></Song>
-				<Song></Song>
+				{songs.map((song, index) => {
+					return (
+						<Song
+							key={song.id}
+							name={song.name}
+							singer={song.singer}
+							image={song.image}
+						/>
+					)
+				})}
 			</PlayList>
 		</div>
 	)
