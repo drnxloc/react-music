@@ -17,6 +17,8 @@ function Player() {
 	const [song, setSong] = useState(songs[0])
 	const cdRef = useRef()
 	const audioRef = useRef()
+	const cdThumbnailRef = useRef()
+	const animateRef = useRef()
 
 	useEffect(() => {
 		const widthCD = cdRef.current.offsetWidth
@@ -30,13 +32,41 @@ function Player() {
 		}
 	}, [])
 
+	useEffect(() => {
+		audioRef.current.ontimeupdate = () => {
+			const loaded = Math.floor(
+				(audioRef.current.currentTime / audioRef.current.duration) * 100
+			)
+			setProgress(loaded)
+		}
+	}, [])
+
+	useEffect(() => {
+		animateRef.current = cdThumbnailRef.current.animate(
+			[{ transform: 'rotate(360deg)' }],
+			{
+				duration: 10000, //ms
+				iterations: Infinity,
+			}
+		)
+		animateRef.current.pause()
+	}, [])
+
 	const handlePlay = (playing, setPlaying) => {
 		setPlaying(!playing)
 		if (playing) {
 			audioRef.current.pause()
+			animateRef.current.pause()
 		} else {
 			audioRef.current.play()
+			animateRef.current.play()
 		}
+	}
+
+	const handleProgress = (e) => {
+		setProgress(e.target.value)
+		const seekTime = audioRef.current.duration * (e.target.value / 100)
+		audioRef.current.currentTime = seekTime
 	}
 
 	return (
@@ -54,6 +84,7 @@ function Player() {
 				<div className="flex m-auto w-52" ref={cdRef}>
 					{/* CD Thumb */}
 					<div
+						ref={cdThumbnailRef}
 						className="w-full pt-[100%] rounded-full m-auto bg-cover bg-slate-500"
 						style={{ backgroundImage: `url(${song.image})` }}
 					></div>
@@ -65,7 +96,7 @@ function Player() {
                     transition-opacity delay-200 appearance-none"
 					type="range"
 					value={progress}
-					onChange={(e) => setProgress(e.target.value)}
+					onChange={handleProgress}
 					step="1"
 					min="0"
 					max="100"
