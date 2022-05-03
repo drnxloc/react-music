@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Button from './Button'
 import {
 	FaRedo,
@@ -14,12 +14,30 @@ import songs from '~/data/songs'
 
 function Player() {
 	const [progress, setProgress] = useState(0)
-	const [name, setName] = useState('Đám cưới nha!')
-	const [singer, setSinger] = useState('Nguyễn Thị Thùy Linh')
-	const [image, setImage] = useState()
-	const [musics, setMusics] = useState()
+	const [song, setSong] = useState(songs[0])
+	const cdRef = useRef()
 	const audioRef = useRef()
-	console.log(songs)
+
+	useEffect(() => {
+		const widthCD = cdRef.current.offsetWidth
+		document.onscroll = () => {
+			const scrollTop =
+				window.scrollY || document.documentElement.scrollTop
+			const newWidth = widthCD - scrollTop
+			const newOpacity = newWidth / widthCD
+			cdRef.current.style.width = `${newWidth > 0 ? newWidth : 0}px`
+			cdRef.current.style.opacity = newOpacity > 0 ? newOpacity : 0
+		}
+	}, [])
+
+	const handlePlay = (playing, setPlaying) => {
+		setPlaying(!playing)
+		if (playing) {
+			audioRef.current.pause()
+		} else {
+			audioRef.current.play()
+		}
+	}
 
 	return (
 		<div className="relative max-w-[480px] mx-auto">
@@ -29,18 +47,19 @@ function Player() {
 					<h4 className="text-sm text-blue-600 font-bold">
 						Now playing:
 					</h4>
-					<h2 className="text-xl">{name}</h2>
+					<h2 className="text-xl">{song.name}</h2>
+					<h3 className="text-sm">{song.singer}</h3>
 				</header>
 				{/* CD */}
-				<div className="flex m-auto w-52">
+				<div className="flex m-auto w-52" ref={cdRef}>
 					{/* CD Thumb */}
 					<div
 						className="w-full pt-[100%] rounded-full m-auto bg-cover bg-slate-500"
-						style={{ backgroundImage: `url(${image})` }}
+						style={{ backgroundImage: `url(${song.image})` }}
 					></div>
 				</div>
 
-				<Controls></Controls>
+				<Controls handlePlay={handlePlay}></Controls>
 				<input
 					className="progress rounded w-full h-[6px] bg-gray-400 outline-none opacity-70 
                     transition-opacity delay-200 appearance-none"
@@ -52,7 +71,7 @@ function Player() {
 					max="100"
 				/>
 
-				<audio ref={audioRef} src=""></audio>
+				<audio ref={audioRef} src={song.path}></audio>
 			</div>
 
 			<PlayList>
@@ -71,31 +90,31 @@ function Player() {
 	)
 }
 
-function Controls() {
+function Controls({ handlePlay }) {
 	const [playing, setPlaying] = useState(false)
 	const [redo, setRedo] = useState(false)
 	const [random, setRandom] = useState(false)
 
-	function backward() {}
+	function handleBackward() {}
 
-	function forward() {}
+	function handleForward() {}
 
 	return (
 		<div className="flex items-center justify-center space-around pt-[18px] pb-2">
 			<Button active={redo} onClick={() => setRedo(!redo)}>
 				<FaRedo />
 			</Button>
-			<Button onClick={backward}>
+			<Button onClick={handleBackward}>
 				<FaStepBackward />
 			</Button>
 			<Button
 				primary
 				active={playing}
-				onClick={() => setPlaying(!playing)}
+				onClick={() => handlePlay(playing, setPlaying)}
 			>
 				{(playing && <FaPause />) || <FaPlay />}
 			</Button>
-			<Button onClick={forward}>
+			<Button onClick={handleForward}>
 				<FaStepForward />
 			</Button>
 			<Button active={random} onClick={() => setRandom(!random)}>
