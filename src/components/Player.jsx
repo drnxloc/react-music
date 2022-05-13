@@ -13,8 +13,9 @@ import Song from './Song'
 import songs from '~/data/songs'
 
 function Player() {
+	const indexSong = useRef(0)
 	const [progress, setProgress] = useState(0)
-	const [song, setSong] = useState(songs[0])
+	const [song, setSong] = useState(songs[indexSong.current])
 	const cdRef = useRef()
 	const audioRef = useRef()
 	const cdThumbnailRef = useRef()
@@ -33,34 +34,62 @@ function Player() {
 	}, [])
 
 	useEffect(() => {
-		audioRef.current.ontimeupdate = () => {
+		const updateProgress = () => {
 			const loaded = Math.floor(
 				(audioRef.current.currentTime / audioRef.current.duration) * 100
 			)
 			setProgress(loaded)
 		}
-	}, [])
+		audioRef.current.addEventListener('timeupdate', updateProgress)
+
+		return () => {
+			audioRef.current.removeEventListener('timeupdate', updateProgress)
+		}
+	}, [song.id])
 
 	useEffect(() => {
 		animateRef.current = cdThumbnailRef.current.animate(
 			[{ transform: 'rotate(360deg)' }],
 			{
-				duration: 10000, //ms
+				duration: 20000, //ms
 				iterations: Infinity,
 			}
 		)
 		animateRef.current.pause()
 	}, [])
 
+	const play = () => {
+		audioRef.current.play()
+		animateRef.current.play()
+	}
+
+	const pause = () => {
+		audioRef.current.pause()
+		animateRef.current.pause()
+	}
+
+	const reload = () => {
+		audioRef.current.load()
+	}
+
 	const handlePlay = (playing, setPlaying) => {
 		setPlaying(!playing)
-		if (playing) {
-			audioRef.current.pause()
-			animateRef.current.pause()
-		} else {
-			audioRef.current.play()
-			animateRef.current.play()
-		}
+		if (playing) pause()
+		else play()
+	}
+
+	function handleBackward() {
+		indexSong.current--
+		if (indexSong.current < 0) indexSong.current = songs.length - 1
+		setSong(songs[indexSong.current])
+		reload()
+	}
+
+	function handleForward() {
+		indexSong.current++
+		if (indexSong.current >= songs.length) indexSong.current = 0
+		setSong(songs[indexSong.current])
+		reload()
 	}
 
 	const handleProgress = (e) => {
@@ -90,7 +119,11 @@ function Player() {
 					></div>
 				</div>
 
-				<Controls handlePlay={handlePlay}></Controls>
+				<Controls
+					handlePlay={handlePlay}
+					handleBackward={handleBackward}
+					handleForward={handleForward}
+				></Controls>
 				<input
 					className="progress rounded w-full h-[6px] bg-gray-400 outline-none opacity-70 
                     transition-opacity delay-200 appearance-none"
@@ -102,7 +135,7 @@ function Player() {
 					max="100"
 				/>
 
-				<audio ref={audioRef} src={song.path}></audio>
+				<audio key={song.id} ref={audioRef} src={song.path}></audio>
 			</div>
 
 			<PlayList>
@@ -121,14 +154,10 @@ function Player() {
 	)
 }
 
-function Controls({ handlePlay }) {
+function Controls({ handlePlay, handleBackward, handleForward }) {
 	const [playing, setPlaying] = useState(false)
 	const [redo, setRedo] = useState(false)
 	const [random, setRandom] = useState(false)
-
-	function handleBackward() {}
-
-	function handleForward() {}
 
 	return (
 		<div className="flex items-center justify-center space-around pt-[18px] pb-2">
